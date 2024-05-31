@@ -5,7 +5,7 @@ Bu repo, Tavsiye Sistemleri konuları üzerine yapılan konu anlatımlarını ve
 ## Eğitim İçerikleri
 
 1. **Association Rule Learning**
-2. **Item-Based Recommender**
+2. **Item-Based Recommender**(Veri setine https://grouplens.org/datasets/movielens/ adresinden ulaşılabilir.)
 3. **Content-Based Recommender**
 4. **User-Based Recommender**
 
