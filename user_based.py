@@ -139,7 +139,7 @@ recommendation_df = recommendation_df.reset_index()
 recommendation_df.head()
 
 # Belirli bir skor üstü olanları almak istiyorum.
-movies_to_be_recommend = recommendation_df.loc[recommendation_df["weighted_rating"] > 1.5].sort_values("weighted_rating", ascending=False)
+movies_to_be_recommend = recommendation_df.loc[recommendation_df["weighted_rating"] > 1.5]
 movies_to_be_recommend = movies_to_be_recommend.reset_index(drop=True)
 movies_to_be_recommend.head()
 
@@ -147,9 +147,38 @@ movies_to_be_recommend.head()
 movie_end = movies_to_be_recommend.merge(movie_df[["movieId", "title"]], on="movieId", how="inner")
 movie_end.head()
 
-# Kullanıcıya Tavsiyede bulunmak için 5 film önereceksek zaten sıralı bir dataframe olduğu için
-movie_end["title"].head()
+# Kullanıcıya Tavsiyede bulunmak için 10 film önereceksek zaten sıralı bir dataframe olduğu için
+movie_end.sort_values("weighted_rating", ascending=False)["title"].head(10)
 
+# Tüm bu süreci fonksiyonlaştıralıma.
+def user_based_recomender(dataframe, perc_value=65, corr_thresh=0.4, weighted_score=2, rec_thresh=10):
+    random_user = dataframe.sample(1, axis=0, random_state=22).index[0]
+    random_user_df = dataframe.loc[dataframe.index == random_user]
+    user_watch = random_user_df.dropna(axis=1).columns.to_list()
+    movies_watch_df = user_movie_df[user_watch]
+    user_movie_count = movies_watch_df.notnull().sum(axis=1)
+    user_movie_count = pd.DataFrame(user_movie_count, columns=["count"]).reset_index()
+    perc = len(user_watch) * perc_value / 100
+    user_same_movies = user_movie_count.loc[user_movie_count["count"] > perc, "userId"]
+    final_df = movies_watch_df.loc[movies_watch_df.index.isin(user_same_movies)]
+    corr_df = final_df.T.corr().unstack().sort_values().drop_duplicates()
+    corr_df = pd.DataFrame(corr_df, columns=["corr"])
+    corr_df.index.names = ["userId_1", "userId_2"]
+    corr_df = corr_df.reset_index()
+    top_user = corr_df.loc[(corr_df["userId_1"] == random_user) & (corr_df["corr"] > corr_thresh)]
+    top_user = top_user[["userId_2", "corr"]]
+    top_user = top_user.reset_index(drop=True).sort_values("corr", ascending=False)
+    top_user = top_user.rename(columns={"userId_2": "userId"})
+    top_user_ratings = top_user.merge(rating_df[["userId", "movieId", "rating"]], how="inner", on="userId")
+    top_user_ratings["weighted_score"] = top_user_ratings["corr"] * top_user_ratings["rating"]
+    recemmendation_df = top_user_ratings.groupby("movieId").agg({"weighted_score": "mean"})
+    recemmendation_df = recemmendation_df.reset_index()
+    movies_to_be_recommend = recemmendation_df.loc[recemmendation_df["weighted_score"] > weighted_score]
+    movies_to_be_recommend = movies_to_be_recommend.reset_index(drop=True)
+    movie_end = movies_to_be_recommend.merge(movie_df[["movieId", "title"]], how="inner", on="movieId")
+    return movie_end.sort_values("weighted_score", ascending=False)["title"].head(10)
+
+user_based_recomender(user_movie_df)
 
 
 
