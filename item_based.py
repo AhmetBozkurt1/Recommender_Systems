@@ -32,8 +32,8 @@ pd.set_option("display.max_row", None)
 pd.set_option("display.width", 500)
 
 # İki ayrı veri setini birleştireceğiz.
-movie_df = pd.read_csv("/Users/ahmetbozkurt/Desktop/Recommender_Systems-1/dataset/movie.csv")
-rating_df = pd.read_csv("/Users/ahmetbozkurt/Desktop/Recommender_Systems-1/dataset/rating.csv")
+movie_df = pd.read_csv("movie.csv")
+rating_df = pd.read_csv("rating.csv")
 movie_df.head()
 rating_df.head()
 movie_df.isnull().sum()

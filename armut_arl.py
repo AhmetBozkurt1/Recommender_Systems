@@ -34,7 +34,7 @@ pd.set_option("display.width", 500)
 pd.set_option("display.max_columns", None)
 pd.set_option("display.max_row", None)
 
-df = pd.read_csv("/Users/ahmetbozkurt/Desktop/Recommender_Systems/dataset/armut_data.csv")
+df = pd.read_csv("armut_data.csv")
 
 # Veriye Genel Bakış
 def check_df(dataframe, head=5):

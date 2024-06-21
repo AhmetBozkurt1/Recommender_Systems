@@ -29,7 +29,7 @@ pd.set_option("display.width", 500)
 pd.set_option("display.float_format", lambda x: "%.4f" % x)
 
 # VERİ SETİNİN OKUTULMASI
-df = pd.read_csv("/Users/ahmetbozkurt/Desktop/Recommender_Systems/dataset/movies_metadata.csv")
+df = pd.read_csv("movies_metadata.csv")
 df.head()
 df.isnull().sum()
 df.shape
